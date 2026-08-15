@@ -1,1037 +1,515 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق محاسبي</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #2d3748;
-            color: #edf2f7;
-            position: fixed;
-            padding-top: 20px;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-        }
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        .sidebar a {
-            display: block;
-            padding: 15px 20px;
-            color: #edf2f7;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin: 5px 0;
-        }
-        .sidebar a:hover {
-            background-color: #4a5568;
-            transform: scale(1.02);
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        h1 {
-            color: #2b6cb0;
-            margin-bottom: 20px;
-            font-size: 2em;
-            font-weight: 700;
-        }
-        .stats, .table-container, .customer-table-container, .payment-form-container, .inventory-container, .sales-container {
-            margin-bottom: 30px;
-        }
-        .stat-box, .customer-table-container, .payment-form-container, .inventory-container, .sales-container {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .stat-box:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-        .stat-box h3 {
-            margin: 0;
-            font-size: 1.2em;
-        }
-        .stat-box p {
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
-        .daily-payments, .customer-table, .payment-form-table, .inventory-table, .sales-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .daily-payments th, .customer-table th, .payment-form-table th, .inventory-table th, .sales-table th, .daily-payments td, .customer-table td, .payment-form-table td, .inventory-table td, .sales-table td {
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
-        .daily-payments th, .customer-table th, .payment-form-table th, .inventory-table th, .sales-table th {
-            background-color: #2b6cb0;
-            color: white;
-        }
-        .daily-payments td, .customer-table td, .payment-form-table td, .inventory-table td, .sales-table td {
-            background-color: #fff;
-        }
-        .add-customer-form, .payment-form, .add-product-form, .sales-form {
-            margin-top: 20px;
-        }
-        .add-customer-form input, .payment-form input, .add-product-form input, .payment-form select, .add-customer-form select, .add-customer-form button, .payment-form button, .add-product-form button, .sales-form input, .sales-form select, .sales-form button {
-            display: block;
-            margin: 10px 0;
-            padding: 10px;
-            width: calc(100% - 22px);
-            font-size: 1em;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق وهب المحاسبي</title>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="sidebar">
-        <h2><i class="fas fa-cogs"></i> تطبيق محاسبي</h2>
-        <a href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> الرئيسية</a>
-        <a href="#" onclick="showSection('customers')"><i class="fas fa-users"></i> العملاء</a>
-        <a href="#" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> التقارير</a>
-        <a href="#" onclick="showSection('sales')"><i class="fas fa-receipt"></i> الفواتير</a>
-        <a href="#" onclick="showSection('sale')"><i class="fas fa-shopping-cart"></i> قائمة البيع</a>
-        <a href="#" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> تسديد الأقساط</a>
-        <a href="#" onclick="showSection('inventory')"><i class="fas fa-box"></i> المخزن</a>
-        <a href="#" onclick="showSection('settings')"><i class="fas fa-cogs"></i> الإعدادات</a>
-    </div>
-
-    <div class="main-content">
-        <!-- لوحة التحكم -->
-        <div id="dashboard" class="section active">
-            <h1><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h1>
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>إجمالي الإيرادات</h3>
-                    <p id="total-revenue">0 د.ع</p>
-                </div>
-                <div class="stat-box">
-                    <h3>إجمالي المصروفات</h3>
-                    <p id="total-expenses">0 د.ع</p>
-                </div>
-                <div class="stat-box">
-                    <h3>الأرباح/الخسائر</h3>
-                    <p id="total-profit">0 د.ع</p>
-                </div>
-                <div class="stat-box">
-                    <h3>الرصيد الكلي</h3>
-                    <p id="total-balance">0 د.ع</p>
-                </div>
-            </div>
-
-            <!-- عرض المدفوعات اليومية -->
-            <div class="table-container">
-                <h2>المدفوعات اليومية</h2>
-                <table class="daily-payments">
-                    <thead>
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>المبلغ المدفوع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="daily-payments-list">
-                        <!-- المدفوعات اليومية سيتم إضافتها هنا ديناميكيًا -->
-                    </tbody>
-                </table>
-            </div>
+    <!-- الهيدر العلوي للتطبيق -->
+    <header class="app-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-wallet brand-icon"></i>
+            <span class="app-title">وهب المحاسبي</span>
         </div>
-
-        <!-- العملاء -->
-        <div id="customers" class="section">
-            <h1><i class="fas fa-users"></i> العملاء</h1>
-            <div class="customer-table-container">
-                <h2>قائمة الزبائن</h2>
-                <table class="customer-table">
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>رقم الهاتف</th>
-                            <th>العنوان</th>
-                            <th>الحاجة المشتراة</th>
-                            <th>المبلغ المتبقي</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customers-list">
-                        <!-- بيانات الزبائن سيتم إضافتها هنا ديناميكيًا -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- نموذج إضافة زبون جديد -->
-            <div class="add-customer-form">
-                <h2><i class="fas fa-user-plus"></i> إضافة زبون جديد</h2>
-                <input type="text" id="customer-name" placeholder="الاسم">
-                <input type="text" id="customer-phone" placeholder="رقم الهاتف">
-                <input type="text" id="customer-address" placeholder="العنوان">
-                <input type="text" id="customer-item" placeholder="الحاجة المشتراة">
-                <button onclick="addCustomer()">إضافة الزبون</button>
-            </div>
+        <div class="header-actions">
+            <span class="active-section-title" id="current-section-title">الرئيسية</span>
         </div>
+    </header>
 
-        <!-- تسديد الأقساط -->
-        <div id="payments" class="section">
-            <h1><i class="fas fa-credit-card"></i> تسديد الأقساط</h1>
-            <div class="payment-form-container">
-                <h2>تسديد الأقساط</h2>
-                <select id="customer-select" onchange="showPaymentForm()">
-                    <option value="">اختر الزبون</option>
-                    <!-- سيتم ملء خيارات الزبائن هنا ديناميكيًا -->
-                </select>
-                <div id="payment-form" style="display: none;">
-                    <div id="payment-customer-info"></div>
-                    <table class="payment-form-table">
+    <!-- الحاوية الرئيسية للمحتوى -->
+    <main class="main-container">
+
+        <!-- لوحة التحكم / الرئيسية -->
+        <section id="dashboard" class="app-section active">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-chart-pie"></i> لوحة التحكم</h2>
+            </div>
+
+            <!-- بطاقات الإحصائيات - الريال اليمني -->
+            <div class="currency-group-title">
+                <i class="fa-solid fa-coins"></i> ملخص بالريال اليمني (ر.ي)
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon revenue-icon"><i class="fa-solid fa-arrow-down-left-and-up-right-to-center"></i></div>
+                    <div class="stat-info">
+                        <span>إجمالي الإيرادات</span>
+                        <h3 id="yer-revenue">0 ر.ي</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon expense-icon"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+                    <div class="stat-info">
+                        <span>إجمالي المصروفات</span>
+                        <h3 id="yer-expenses">0 ر.ي</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon profit-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="stat-info">
+                        <span>الأرباح</span>
+                        <h3 id="yer-profit">0 ر.ي</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon balance-icon"><i class="fa-solid fa-vault"></i></div>
+                    <div class="stat-info">
+                        <span>الرصيد المتبقي لدى العملاء</span>
+                        <h3 id="yer-balance">0 ر.ي</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات - الدولار -->
+            <div class="currency-group-title">
+                <i class="fa-solid fa-dollar-sign"></i> ملخص بالدولار الأمريكي ($)
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon revenue-icon"><i class="fa-solid fa-arrow-down-left-and-up-right-to-center"></i></div>
+                    <div class="stat-info">
+                        <span>إجمالي الإيرادات</span>
+                        <h3 id="usd-revenue">$0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon expense-icon"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+                    <div class="stat-info">
+                        <span>إجمالي المصروفات</span>
+                        <h3 id="usd-expenses">$0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon profit-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="stat-info">
+                        <span>الأرباح</span>
+                        <h3 id="usd-profit">$0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon balance-icon"><i class="fa-solid fa-vault"></i></div>
+                    <div class="stat-info">
+                        <span>الرصيد المتبقي لدى العملاء</span>
+                        <h3 id="usd-balance">$0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول أو بطاقات المدفوعات الأخيرة -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> أحدث التحصيلات والمدفوعات</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="app-table">
                         <thead>
                             <tr>
-                                <th>الدفعة</th>
-                                <th>المبلغ</th>
-                                <th>تاريخ الدفع</th>
+                                <th>العميل</th>
+                                <th>المبلغ المدفوع</th>
+                                <th>العملة</th>
+                                <th>التاريخ</th>
                             </tr>
                         </thead>
-                        <tbody id="payment-list">
-                            <!-- تفاصيل الدفع ستضاف هنا -->
+                        <tbody id="recent-payments-list">
+                            <!-- المخرجات الديناميكية -->
                         </tbody>
                     </table>
-                    <div class="payment-form">
-                        <input type="number" id="payment-amount" placeholder="المبلغ المدفوع">
-                        <button onclick="submitPayment()">تسديد</button>
-                    </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- العملاء -->
+        <section id="customers" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-users"></i> إدارة العملاء</h2>
+            </div>
+
+            <!-- نموذج إضافة عميل جديد -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-user-plus"></i> إضافة عميل جديد</h3>
+                </div>
+                <form id="add-customer-form" onsubmit="addCustomer(event)">
+                    <div class="form-group">
+                        <label for="customer-name">اسم العميل</label>
+                        <input type="text" id="customer-name" class="form-control" placeholder="أدخل اسم العميل الكامل" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-phone">رقم الهاتف</label>
+                        <input type="tel" id="customer-phone" class="form-control" placeholder="مثال: 771234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-address">العنوان</label>
+                        <input type="text" id="customer-address" class="form-control" placeholder="أدخل العنوان السكني أو التجاري">
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-item">البيان / الحاجة المشتراة</label>
+                        <input type="text" id="customer-item" class="form-control" placeholder="وصف المشتريات أو الخدمة">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="customer-initial-amount">المبلغ المتبقي السابِق</label>
+                            <input type="number" step="any" id="customer-initial-amount" class="form-control" placeholder="0" value="0">
+                        </div>
+                        <div class="form-group half">
+                            <label for="customer-currency">العملة</label>
+                            <select id="customer-currency" class="form-control">
+                                <option value="YER">ريال يمني (ر.ي)</option>
+                                <option value="USD">دولار أمريكي ($)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-plus"></i> حفظ العميل
+                    </button>
+                </form>
+            </div>
+
+            <!-- قائمة العملاء -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-address-book"></i> قائمة العملاء</h3>
+                    <input type="text" id="search-customer" class="form-control search-input" placeholder="بحث باسم العميل..." oninput="filterCustomers()">
+                </div>
+                <div class="table-responsive">
+                    <table class="app-table">
+                        <thead>
+                            <tr>
+                                <th>اسم العميل</th>
+                                <th>رقم الهاتف</th>
+                                <th>العنوان</th>
+                                <th>البيان</th>
+                                <th>المبلغ المتبقي</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customers-list">
+                            <!-- سيتم إضافتها ديناميكياً -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- قائمة البيع والفواتير -->
+        <section id="sales" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-file-invoice-dollar"></i> قائمة البيع والفواتير</h2>
+            </div>
+
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-cart-plus"></i> إنشاء عملية بيع جديدة</h3>
+                </div>
+                <form id="add-sale-form" onsubmit="addSale(event)">
+                    <div class="form-group">
+                        <label for="sale-customer-select">اختر العميل</label>
+                        <select id="sale-customer-select" class="form-control" required>
+                            <option value="">اختر العميل...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-product-select">اختر المنتج من المخزن (اختياري)</label>
+                        <select id="sale-product-select" class="form-control" onchange="onSaleProductChange()">
+                            <option value="">اختر المنتج...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-product-name">اسم الصنف / البيان</label>
+                        <input type="text" id="sale-product-name" class="form-control" placeholder="اسم المنتج أو وصف الخدمة" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="sale-quantity">الكمية</label>
+                            <input type="number" step="any" id="sale-quantity" class="form-control" placeholder="1" value="1" required oninput="calculateSaleTotal()">
+                        </div>
+                        <div class="form-group half">
+                            <label for="sale-price">سعر الوحدة</label>
+                            <input type="number" step="any" id="sale-price" class="form-control" placeholder="0" required oninput="calculateSaleTotal()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="sale-currency">العملة</label>
+                            <select id="sale-currency" class="form-control" onchange="calculateSaleTotal()">
+                                <option value="YER">ريال يمني (ر.ي)</option>
+                                <option value="USD">دولار أمريكي ($)</option>
+                            </select>
+                        </div>
+                        <div class="form-group half">
+                            <label>الإجمالي</label>
+                            <div id="sale-total-display" class="total-badge">0 ر.ي</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-check"></i> اعتماد البيع وطباعة الفاتورة
+                    </button>
+                </form>
+            </div>
+
+            <!-- جدول الفواتير والصفقات -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-receipt"></i> سجل المبيعات والفواتير</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="app-table">
+                        <thead>
+                            <tr>
+                                <th>اسم العميل</th>
+                                <th>اسم المنتج</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>المجموع</th>
+                                <th>التاريخ</th>
+                                <th>طباعة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-list">
+                            <!-- سيتم إضافتها ديناميكياً -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- تسديد الأقساط -->
+        <section id="payments" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-money-bill-wave"></i> تسديد الأقساط والديون</h2>
+            </div>
+
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-hand-holding-dollar"></i> تسجيل دفعة جديدة</h3>
+                </div>
+                <form id="payment-form" onsubmit="submitPayment(event)">
+                    <div class="form-group">
+                        <label for="payment-customer-select">اختر العميل</label>
+                        <select id="payment-customer-select" class="form-control" onchange="onPaymentCustomerChange()" required>
+                            <option value="">اختر العميل...</option>
+                        </select>
+                    </div>
+
+                    <div id="payment-customer-info" class="info-box" style="display: none;">
+                        <!-- معلومات المبلغ المتبقي للعميل -->
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="payment-amount">المبلغ المدفوع</label>
+                            <input type="number" step="any" id="payment-amount" class="form-control" placeholder="أدخل المبلغ" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="payment-currency">العملة</label>
+                            <select id="payment-currency" class="form-control">
+                                <option value="YER">ريال يمني (ر.ي)</option>
+                                <option value="USD">دولار أمريكي ($)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-notes">ملاحظات / بيان الدفعة</label>
+                        <input type="text" id="payment-notes" class="form-control" placeholder="مثال: دفعة قسط شهر سبتمبر">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fa-solid fa-print"></i> تسديد وطباعة السند
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-list-check"></i> سجل المقبوضات والسندات</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="app-table">
+                        <thead>
+                            <tr>
+                                <th>اسم العميل</th>
+                                <th>المبلغ المدفوع</th>
+                                <th>العملة</th>
+                                <th>التاريخ</th>
+                                <th>ملاحظات</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-history-list">
+                            <!-- سيتم إضافتها ديناميكياً -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
         <!-- المخزن -->
-        <div id="inventory" class="section">
-            <h1><i class="fas fa-box"></i> المخزن</h1>
-            <div class="inventory-container">
-                <h2>المنتجات في المخزن</h2>
-                <table class="inventory-table">
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>الكمية</th>
-                            <th>السعر</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventory-list">
-                        <!-- بيانات المنتجات سيتم إضافتها هنا ديناميكيًا -->
-                    </tbody>
-                </table>
+        <section id="inventory" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-boxes-stacked"></i> إدارة المخزن والمنتجات</h2>
+            </div>
 
-                <!-- نموذج إضافة منتج جديد -->
-                <div class="add-product-form">
-                    <h2><i class="fas fa-box-plus"></i> إضافة منتج جديد</h2>
-                    <input type="text" id="product-name" placeholder="اسم المنتج">
-                    <input type="number" id="product-quantity" placeholder="الكمية">
-                    <input type="number" id="product-price" placeholder="السعر">
-                    <button onclick="addProduct()">إضافة المنتج</button>
+            <!-- إضافة منتج -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-box-open"></i> إضافة منتج جديد</h3>
+                </div>
+                <form id="add-product-form" onsubmit="addProduct(event)">
+                    <div class="form-group">
+                        <label for="product-name">اسم المنتج</label>
+                        <input type="text" id="product-name" class="form-control" placeholder="أدخل اسم المنتج" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="product-quantity">الكمية المتوفرة</label>
+                            <input type="number" step="any" id="product-quantity" class="form-control" placeholder="0" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="product-price">سعر البيع</label>
+                            <input type="number" step="any" id="product-price" class="form-control" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-currency">العملة</label>
+                        <select id="product-currency" class="form-control">
+                            <option value="YER">ريال يمني (ر.ي)</option>
+                            <option value="USD">دولار أمريكي ($)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-plus"></i> إضافة المنتج إلى المخزن
+                    </button>
+                </form>
+            </div>
+
+            <!-- قائمة المنتجات -->
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-warehouse"></i> المنتجات في المخزن</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="app-table">
+                        <thead>
+                            <tr>
+                                <th>اسم المنتج</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>العملة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-list">
+                            <!-- سيتم إضافتها ديناميكياً -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- قائمة البيع -->
-        <div id="sale" class="section">
-            <h1><i class="fas fa-shopping-cart"></i> قائمة البيع</h1>
-            <div class="sales-container">
-                <h2>قائمة الفواتير</h2>
-                <select id="sale-customer-select">
-                    <option value="">اختر الزبون</option>
-                    <!-- سيتم ملء خيارات الزبائن هنا ديناميكيًا -->
-                </select>
-                <div class="sales-form">
-                    <h2>إضافة بيع جديد</h2>
-                    <select id="sale-product-select">
-                        <option value="">اختر المنتج</option>
-                        <!-- سيتم ملء خيارات المنتجات هنا ديناميكيًا -->
-                    </select>
-                    <input type="number" id="sale-quantity" placeholder="الكمية">
-                    <button onclick="addSale()">إضافة البيع</button>
-                </div>
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>اسم الزبون</th>
-                            <th>اسم المنتج</th>
-                            <th>الكمية</th>
-                            <th>السعر</th>
-                            <th>المجموع</th>
-                            <th>تاريخ البيع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sales-list">
-                        <!-- بيانات الفواتير سيتم إضافتها هنا ديناميكيًا -->
-                    </tbody>
-                </table>
+        <!-- التقارير -->
+        <section id="reports" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-chart-line"></i> التقارير الماليّة الشاملة</h2>
             </div>
-        </div>
+
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-file-contract"></i> ملخص الكشف المالي</h3>
+                </div>
+                <div class="report-summary">
+                    <div class="report-box">
+                        <h4>الريال اليمني (ر.ي)</h4>
+                        <p>إجمالي المبيعات: <strong id="report-yer-sales">0 ر.ي</strong></p>
+                        <p>إجمالي التحصيلات: <strong id="report-yer-payments">0 ر.ي</strong></p>
+                        <p>إجمالي الديون المتبقية: <strong id="report-yer-debts">0 ر.ي</strong></p>
+                    </div>
+                    <div class="report-box">
+                        <h4>الدولار الأمريكي ($)</h4>
+                        <p>إجمالي المبيعات: <strong id="report-usd-sales">$0</strong></p>
+                        <p>إجمالي التحصيلات: <strong id="report-usd-payments">$0</strong></p>
+                        <p>إجمالي الديون المتبقية: <strong id="report-usd-debts">$0</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- الإعدادات -->
-        <div id="settings" class="section">
-            <h1><i class="fas fa-cogs"></i> الإعدادات</h1>
-            <!-- محتوى الإعدادات -->
-        </div>
-    </div>
+        <section id="settings" class="app-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-sliders"></i> إعدادات التطبيق والمحل</h2>
+            </div>
 
-    <script>
-        const customersData = [];
-        const inventoryData = [];
-        const salesData = [];
-        const paymentsData = [];
-
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-
-            if (sectionId === 'customers') {
-                populateCustomerSelect();
-            } else if (sectionId === 'inventory') {
-                showInventory();
-            } else if (sectionId === 'sale') {
-                populateSaleCustomerSelect();
-                populateSaleProductSelect();
-                showSales();
-            }
-        }
-
-        function addCustomer() {
-            const name = document.getElementById('customer-name').value;
-            const phone = document.getElementById('customer-phone').value;
-            const address = document.getElementById('customer-address').value;
-            const item = document.getElementById('customer-item').value;
-
-            if (name && phone && address && item) {
-                customersData.push({ name, phone, address, item, amount: 0 });
-                showCustomers();
-                populateCustomerSelect();
-                document.getElementById('customer-name').value = '';
-                document.getElementById('customer-phone').value = '';
-                document.getElementById('customer-address').value = '';
-                document.getElementById('customer-item').value = '';
-            } else {
-                alert('يرجى ملء جميع الحقول بشكل صحيح.');
-            }
-        }
-
-        function showCustomers() {
-            const customersList = document.getElementById('customers-list');
-            customersList.innerHTML = '';
-
-            customersData.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.phone}</td>
-                    <td>${customer.address}</td>
-                    <td>${customer.item}</td>
-                    <td>${customer.amount.toLocaleString()} د.ع</td>
-                `;
-                customersList.appendChild(row);
-            });
-        }
-
-        function populateCustomerSelect() {
-            const customerSelect = document.getElementById('customer-select');
-            const saleCustomerSelect = document.getElementById('sale-customer-select');
-            customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-            saleCustomerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-
-            customersData.forEach((customer, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = customer.name;
-                customerSelect.appendChild(option);
-                saleCustomerSelect.appendChild(option.cloneNode(true));
-            });
-        }
-
-        function showPaymentForm() {
-            const customerIndex = document.getElementById('customer-select').value;
-            const paymentForm = document.getElementById('payment-form');
-            const paymentCustomerInfo = document.getElementById('payment-customer-info');
-            const paymentList = document.getElementById('payment-list');
-            paymentList.innerHTML = '';
-
-            if (customerIndex !== '') {
-                const customer = customersData[customerIndex];
-                paymentCustomerInfo.innerHTML = `
-                    <strong>الاسم:</strong> ${customer.name}<br>
-                    <strong>المبلغ المتبقي:</strong> ${customer.amount.toLocaleString()} د.ع
-                `;
-                const numInstallments = 5;
-                const installmentAmount = customer.amount / numInstallments;
-
-                for (let i = 1; i <= numInstallments; i++) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>الدفعة ${i}</td>
-                        <td>${installmentAmount.toLocaleString()} د.ع</td>
-                        <td><input type="date" id="payment-date-${i}"></td>
-                    `;
-                    paymentList.appendChild(row);
-                }
-                paymentForm.style.display = 'block';
-            } else {
-                paymentForm.style.display = 'none';
-            }
-        }
-
-        function submitPayment() {
-            const customerIndex = document.getElementById('customer-select').value;
-            const amount = parseFloat(document.getElementById('payment-amount').value);
-            const customer = customersData[customerIndex];
-
-            if (customerIndex !== '' && !isNaN(amount) && amount > 0) {
-                customer.amount -= amount;
-                showCustomers();
-                document.getElementById('payment-amount').value = '';
-                showPaymentForm();
-            } else {
-                alert('يرجى إدخال مبلغ صحيح.');
-            }
-        }
-
-        function addProduct() {
-            const name = document.getElementById('product-name').value;
-            const quantity = parseFloat(document.getElementById('product-quantity').value);
-            const price = parseFloat(document.getElementById('product-price').value);
-
-            if (name && !isNaN(quantity) && !isNaN(price)) {
-                inventoryData.push({ name, quantity, price });
-                showInventory();
-                populateSaleProductSelect();
-                document.getElementById('product-name').value = '';
-                document.getElementById('product-quantity').value = '';
-                document.getElementById('product-price').value = '';
-            } else {
-                alert('يرجى ملء جميع الحقول بشكل صحيح.');
-            }
-        }
-
-        function showInventory() {
-            const inventoryList = document.getElementById('inventory-list');
-            inventoryList.innerHTML = '';
-
-            inventoryData.forEach(product => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.name}</td>
-                    <td>${product.quantity}</td>
-                    <td>${product.price.toLocaleString()} د.ع</td>
-                `;
-                inventoryList.appendChild(row);
-            });
-        }
-
-        function populateSaleProductSelect() {
-            const saleProductSelect = document.getElementById('sale-product-select');
-            saleProductSelect.innerHTML = '<option value="">اختر المنتج</option>';
-
-            inventoryData.forEach((product, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = product.name;
-                saleProductSelect.appendChild(option);
-            });
-        }
-
-        function populateSaleCustomerSelect() {
-            const saleCustomerSelect = document.getElementById('sale-customer-select');
-            saleCustomerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-
-            customersData.forEach((customer, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = customer.name;
-                saleCustomerSelect.appendChild(option);
-            });
-        }
-
-        function addSale() {
-            const customerIndex = document.getElementById('sale-customer-select').value;
-            const productIndex = document.getElementById('sale-product-select').value;
-            const quantity = parseFloat(document.getElementById('sale-quantity').value);
-            const customer = customersData[customerIndex];
-            const product = inventoryData[productIndex];
-
-            if (customerIndex !== '' && productIndex !== '' && !isNaN(quantity) && quantity > 0) {
-                const totalAmount = quantity * product.price;
-                salesData.push({ customer: customer.name, product: product.name, quantity, price: product.price, total: totalAmount, date: new Date().toLocaleDateString() });
-                customer.amount = (customer.amount || 0) + totalAmount;
-                showSales();
-                showCustomers();
-                printInvoice(customer.name, product.name, quantity, product.price, totalAmount);
-                document.getElementById('sale-quantity').value = '';
-            } else {
-                alert('يرجى إدخال جميع الحقول بشكل صحيح.');
-            }
-        }
-
-        function showSales() {
-            const salesList = document.getElementById('sales-list');
-            salesList.innerHTML = '';
-
-            salesData.forEach(sale => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${sale.customer}</td>
-                    <td>${sale.product}</td>
-                    <td>${sale.quantity}</td>
-                    <td>${sale.price.toLocaleString()} د.ع</td>
-                    <td>${sale.total.toLocaleString()} د.ع</td>
-                    <td>${sale.date}</td>
-                `;
-                salesList.appendChild(row);
-            });
-        }
-
-        function printInvoice(customerName, productName, quantity, price, total) {
-            const invoiceWindow = window.open('', '', 'width=600,height=400');
-            invoiceWindow.document.write(`
-                <html>
-                <head>
-                    <title>فاتورة بيع</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                        }
-                        .invoice-container {
-                            width: 100%;
-                            padding: 20px;
-                            border: 1px solid #ddd;
-                            margin-top: 20px;
-                        }
-                        .invoice-header {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .invoice-details {
-                            margin-bottom: 20px;
-                        }
-                        .invoice-details table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        .invoice-details th, .invoice-details td {
-                            padding: 10px;
-                            border: 1px solid #ddd;
-                            text-align: left;
-                        }
-                        .invoice-details th {
-                            background-color: #f4f4f4;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="invoice-container">
-                        <div class="invoice-header">
-                            <h1>فاتورة بيع</h1>
-                        </div>
-                        <div class="invoice-details">
-                            <table>
-                                <tr>
-                                    <th>العميل</th>
-                                    <td>${customerName}</td>
-                                </tr>
-                                <tr>
-                                    <th>المنتج</th>
-                                    <td>${productName}</td>
-                                </tr>
-                                <tr>
-                                    <th>الكمية</th>
-                                    <td>${quantity}</td>
-                                </tr>
-                                <tr>
-                                    <th>السعر</th>
-                                    <td>${price.toLocaleString()} د.ع</td>
-                                </tr>
-                                <tr>
-                                    <th>المجموع</th>
-                                    <td>${total.toLocaleString()} د.ع</td>
-                                </tr>
-                            </table>
-                        </div>
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-store"></i> بيانات المحل / المؤسسة</h3>
+                </div>
+                <form id="settings-form" onsubmit="saveSettings(event)">
+                    <div class="form-group">
+                        <label for="store-name">اسم المحل / النشاط</label>
+                        <input type="text" id="store-name" class="form-control" value="وهب للمحاسبة والتجارة">
                     </div>
-                </body>
-                </html>
-            `);
-            invoiceWindow.document.close();
-            invoiceWindow.focus();
-            invoiceWindow.print();
-        }
-
-        // بداية التشغيل
-        showSection('dashboard');
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق المحاسبة</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <style>
-        .invoice-container, .receipt-container {
-            width: 100%;
-            padding: 20px;
-            border: 1px solid #ddd;
-            margin-top: 20px;
-            font-family: Arial, sans-serif;
-        }
-        .invoice-header, .receipt-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .invoice-details, .receipt-details {
-            margin-bottom: 20px;
-        }
-        .invoice-details table, .receipt-details table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .invoice-details th, .invoice-details td, .receipt-details th, .receipt-details td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .invoice-details th, .receipt-details th {
-            background-color: #f4f4f4;
-        }
-        .receipt-logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .receipt-logo img {
-            width: 100px;
-        }
-        .receipt-footer {
-            margin-top: 20px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- باقي أجزاء البرنامج هنا -->
-
-        <!-- تسديد الأقساط -->
-        <div id="payments" class="section">
-            <h1><i class="fas fa-dollar-sign"></i> تسديد الأقساط</h1>
-            <form onsubmit="submitPayment(); return false;">
-                <div>
-                    <label for="customer-select">اختر الزبون:</label>
-                    <select id="customer-select"></select>
-                </div>
-                <div>
-                    <label for="payment-amount">المبلغ المدفوع:</label>
-                    <input type="number" id="payment-amount" step="0.01" min="0" required>
-                </div>
-                <button type="submit">تسديد</button>
-            </form>
-            <div class="receipt-container" id="receipt-container" style="display: none;"></div>
-        </div>
-    </div>
-
-    <script>
-        const customersData = [];
-        const paymentsData = [];
-        const storeAddress = 'شارع المحل، المدينة، الدولة'; // عنوان المحل
-
-        function populateCustomerSelect() {
-            const customerSelect = document.getElementById('customer-select');
-            customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-
-            customersData.forEach((customer, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = customer.name;
-                customerSelect.appendChild(option);
-            });
-        }
-
-        function submitPayment() {
-            const customerIndex = document.getElementById('customer-select').value;
-            const amount = parseFloat(document.getElementById('payment-amount').value);
-            const customer = customersData[customerIndex];
-
-            if (customerIndex !== '' && !isNaN(amount) && amount > 0) {
-                paymentsData.push({ customer: customer.name, amount, date: new Date().toLocaleDateString() });
-                customer.amount = (customer.amount || 0) - amount;
-                showCustomers();
-                showPayments();
-                printInvoice(customer.name, amount, customer.amount);
-                document.getElementById('payment-amount').value = '';
-            } else {
-                alert('يرجى إدخال جميع الحقول بشكل صحيح.');
-            }
-        }
-
-        function showCustomers() {
-            const customersList = document.getElementById('customers-list');
-            customersList.innerHTML = '';
-
-            customersData.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.phone}</td>
-                    <td>${customer.address}</td>
-                    <td>${customer.item}</td>
-                    <td>${customer.amount.toLocaleString()} د.ع</td>
-                `;
-                customersList.appendChild(row);
-            });
-        }
-
-        function showPayments() {
-            const paymentList = document.getElementById('payment-list');
-            paymentList.innerHTML = '';
-
-            paymentsData.forEach(payment => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${payment.amount.toLocaleString()} د.ع</td>
-                    <td>${payment.date}</td>
-                `;
-                paymentList.appendChild(row);
-            });
-        }
-
-        function printInvoice(customerName, amountPaid, remainingAmount) {
-            const receiptWindow = window.open('', '', 'width=600,height=400');
-            receiptWindow.document.write(`
-                <html>
-                <head>
-                    <title>فاتورة تسديد</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                        }
-                        .receipt-container {
-                            width: 100%;
-                            padding: 20px;
-                            border: 1px solid #ddd;
-                            margin-top: 20px;
-                        }
-                        .receipt-logo {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .receipt-logo img {
-                            width: 100px;
-                        }
-                        .receipt-header {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .receipt-header h1 {
-                            margin: 0;
-                            font-size: 24px;
-                        }
-                        .receipt-details {
-                            margin-bottom: 20px;
-                        }
-                        .receipt-details table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        .receipt-details th, .receipt-details td {
-                            padding: 10px;
-                            border: 1px solid #ddd;
-                            text-align: left;
-                        }
-                        .receipt-details th {
-                            background-color: #f4f4f4;
-                        }
-                        .receipt-footer {
-                            margin-top: 20px;
-                            text-align: center;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="receipt-container">
-                        <div class="receipt-logo">
-                            <img src="logo.png" alt="وهب للمحاسبة">
-                        </div>
-                        <div class="receipt-header">
-                            <h1>فاتورة تسديد</h1>
-                        </div>
-                        <div class="receipt-details">
-                            <table>
-                                <tr>
-                                    <th>العميل</th>
-                                    <td>${customerName}</td>
-                                </tr>
-                                <tr>
-                                    <th>المبلغ المدفوع</th>
-                                    <td>${amountPaid.toLocaleString()} د.ع</td>
-                                </tr>
-                                <tr>
-                                    <th>المبلغ المتبقي</th>
-                                    <td>${remainingAmount.toLocaleString()} د.ع</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="receipt-footer">
-                            <p>${storeAddress}</p>
-                        </div>
+                    <div class="form-group">
+                        <label for="store-address">العنوان ورقم التواصل</label>
+                        <input type="text" id="store-address" class="form-control" value="اليمن - صنعاء / هاتف: 770000000">
                     </div>
-                </body>
-                </html>
-            `);
-            receiptWindow.document.close();
-            receiptWindow.focus();
-            receiptWindow.print();
-        }
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق المحاسبة</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <style>
-        /* إضافة التنسيقات الخاصة بالبرنامج هنا */
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- باقي أجزاء البرنامج هنا -->
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
+                    </button>
+                </form>
+            </div>
 
-        <!-- تسديد الأقساط -->
-        <div id="payments" class="section">
-            <h1><i class="fas fa-dollar-sign"></i> تسديد الأقساط</h1>
-            <form onsubmit="submitPayment(); return false;">
-                <div>
-                    <label for="customer-select">اختر الزبون:</label>
-                    <select id="customer-select"></select>
+            <div class="card-container">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-database"></i> إدارة البيانات</h3>
                 </div>
-                <div>
-                    <label for="payment-amount">المبلغ المدفوع:</label>
-                    <input type="number" id="payment-amount" step="0.01" min="0" required>
-                </div>
-                <button type="submit">تسديد</button>
-            </form>
-            <div class="receipt-container" id="receipt-container" style="display: none;"></div>
-        </div>
-    </div>
+                <p class="text-muted">يمكنك إعادة ضبط أو إفراغ البيانات المخزنة محلياً عند الحاجة.</p>
+                <button onclick="resetData()" class="btn btn-danger btn-block">
+                    <i class="fa-solid fa-trash-can"></i> مسح جميع البيانات وحذفها
+                </button>
+            </div>
+        </section>
 
-    <script>
-        const customersData = loadCustomers();
-        const paymentsData = loadPayments();
-        const storeAddress = 'شارع المحل، المدينة، الدولة'; // عنوان المحل
+    </main>
 
-        function populateCustomerSelect() {
-            const customerSelect = document.getElementById('customer-select');
-            customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
+    <!-- شريط الملاحة السفلي المخصص للهواتف المحمولة Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="showSection('dashboard', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>الرئيسية</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('customers', this)">
+            <i class="fa-solid fa-users"></i>
+            <span>العملاء</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('sales', this)">
+            <i class="fa-solid fa-receipt"></i>
+            <span>الفواتير</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('payments', this)">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            <span>الأقساط</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('inventory', this)">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span>المخزن</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('reports', this)">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>التقارير</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('settings', this)">
+            <i class="fa-solid fa-gear"></i>
+            <span>الإعدادات</span>
+        </a>
+    </nav>
 
-            customersData.forEach((customer, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = customer.name;
-                customerSelect.appendChild(option);
-            });
-        }
-
-        function submitPayment() {
-            const customerIndex = document.getElementById('customer-select').value;
-            const amount = parseFloat(document.getElementById('payment-amount').value);
-            const customer = customersData[customerIndex];
-
-            if (customerIndex !== '' && !isNaN(amount) && amount > 0) {
-                paymentsData.push({ customer: customer.name, amount, date: new Date().toLocaleDateString() });
-                savePayments();
-                customer.amount = (customer.amount || 0) - amount;
-                showCustomers();
-                showPayments();
-                printInvoice(customer.name, amount, customer.amount);
-                document.getElementById('payment-amount').value = '';
-            } else {
-                alert('يرجى إدخال جميع الحقول بشكل صحيح.');
-            }
-        }
-
-        function showCustomers() {
-            const customersList = document.getElementById('customers-list');
-            customersList.innerHTML = '';
-
-            customersData.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.phone}</td>
-                    <td>${customer.address}</td>
-                    <td>${customer.item}</td>
-                    <td>${customer.amount ? customer.amount.toLocaleString() + ' د.ع' : 'غير محدد'}</td>
-                `;
-                customersList.appendChild(row);
-            });
-        }
-
-        function showPayments() {
-            const paymentList = document.getElementById('payment-list');
-            paymentList.innerHTML = '';
-
-            paymentsData.forEach(payment => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${payment.amount.toLocaleString()} د.ع</td>
-                    <td>${payment.date}</td>
-                `;
-                paymentList.appendChild(row);
-            });
-        }
-
-        function printInvoice(customerName, amountPaid, remainingAmount) {
-            const receiptWindow = window.open('', '', 'width=600,height=400');
-            receiptWindow.document.write(`
-                <html>
-                <head>
-                    <title>فاتورة تسديد</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                        }
-                        .receipt-container {
-                            width: 100%;
-                            padding: 20px;
-                            border: 1px solid #ddd;
-                            margin-top: 20px;
-                        }
-                        .receipt-logo {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .receipt-logo img {
-                            width: 100px;
-                        }
-                        .receipt-header {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .receipt-header h1 {
-                            margin: 0;
-                            font-size: 24px;
-                        }
-                        .receipt-details {
-                            margin-bottom: 20px;
-                        }
-                        .receipt-details table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        .receipt-details th, .receipt-details td {
-                            padding: 10px;
-                            border: 1px solid #ddd;
-                            text-align: left;
-                        }
-                        .receipt-details th {
-                            background-color: #f4f4f4;
-                        }
-                        .receipt-footer {
-                            margin-top: 20px;
-                            text-align: center;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="receipt-container">
-                        <div class="receipt-logo">
-                            <img src="logo.png" alt="وهب للمحاسبة">
-                        </div>
-                        <div class="receipt-header">
-                            <h1>فاتورة تسديد</h1>
-                        </div>
-                        <div class="receipt-details">
-                            <table>
-                                <tr>
-                                    <th>العميل</th>
-                                    <td>${customerName}</td>
-                                </tr>
-                                <tr>
-                                    <th>المبلغ المدفوع</th>
-                                    <td>${amountPaid.toLocaleString()} د.ع</td>
-                                </tr>
-                                <tr>
-                                    <th>المبلغ المتبقي</th>
-                                    <td>${remainingAmount.toLocaleString()} د.ع</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="receipt-footer">
-                            <p>${storeAddress}</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `);
-            receiptWindow.document.close();
-            receiptWindow.focus();
-            receiptWindow.print();
-        }
-
-        // استرجاع البيانات عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', () => {
-            customersData.push(...loadCustomers());
-            paymentsData.push(...loadPayments());
-            populateCustomerSelect();
-            showCustomers();
-            showPayments();
-        });
-
-        // دالة لحفظ بيانات الزبائن
-        function saveCustomers() {
-            localStorage.setItem('customers', JSON.stringify(customersData));
-        }
-
-        // دالة لحفظ بيانات المدفوعات
-        function savePayments() {
-            localStorage.setItem('payments', JSON.stringify(paymentsData));
-        }
-
-        // دالة لاسترجاع بيانات الزبائن
-        function loadCustomers() {
-            const savedCustomers = localStorage.getItem('customers');
-            if (savedCustomers) {
-                return JSON.parse(savedCustomers);
-            }
-            return [];
-        }
-
-        // دالة لاسترجاع بيانات المدفوعات
-        function loadPayments() {
-            const savedPayments = localStorage.getItem('payments');
-            if (savedPayments) {
-                return JSON.parse(savedPayments);
-            }
-            return [];
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
